@@ -41,5 +41,4 @@
                 $"Ожидайте доставку по адресу {BuyerAddress} к {deliveryDate:dd.MM.yyyy}" );
         }
     }
-
 }

@@ -24,6 +24,7 @@ internal class Program
                     Console.WriteLine( InvalidCountMessage );
                     continue;
                 }
+
                 return value;
             }
 
@@ -44,9 +45,5 @@ internal class Program
         Order order = new( productName, productCount, buyer, address );
         order.Confirm();
         order.PrintOrderStatus();
-
     }
-
 }
-
-
