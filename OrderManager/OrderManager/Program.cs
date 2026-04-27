@@ -1,82 +1,50 @@
 ﻿using System.Text;
+using OrderManager;
 
-
-class Order
+internal class Program
 {
-    private string product;
-    private string buyerName;
-    private string buyerAddress;
-    private int productCount;
-    private bool isConfirmed = false;
+    private const string InvalidCountMessage = "Число товаров не может быть меньше 1. Повтороите попытку ввода";
+    private const string InvalidInputMessage = "Неправильный ввод! Введите число";
 
-
-    private const int deliveryWaitingTime = 3;
-
-    public Order(
-        string product,
-        int count,
-        string buyer,
-        string address )
-    {
-        this.product = product;
-        productCount = count;
-        buyerName = buyer;
-        buyerAddress = address;
-    }
-
-    public bool Confirm()
-    {
-        Console.WriteLine( $"Здравствуйте, {buyerName}, вы заказали {productCount} {product} на адрес {buyerAddress}, все верно?" );
-        string answer = Console.ReadLine()?.ToLower().Trim() ?? "";
-        isConfirmed = answer == "да" || answer == "yes" || answer == "y";
-        return isConfirmed;
-    }
-
-    public void PrintSuccess()
-    {
-        if ( !isConfirmed )
-        {
-            Console.WriteLine( "Заказ не был подтверждён" );
-            return;
-        }
-
-        DateTime deliveryDate = DateTime.Today.AddDays( deliveryWaitingTime );
-        Console.WriteLine( $"{buyerName}! Ваш заказ {product} в количестве {productCount} оформлен! " +
-            $"Ожидайте доставку по адресу {buyerAddress} к {deliveryDate:dd.MM.yyyy}" );
-    }
-}
-
-class Programm
-{
-
-    static string GetString( string prompt )
+    private static string GetString( string prompt )
     {
         Console.Write( prompt );
         return Console.ReadLine() ?? "";
     }
-    static int GetInt( string prompt )
+
+    private static int GetInt( string prompt )
     {
         Console.Write( prompt );
         while ( true )
         {
             if ( int.TryParse( Console.ReadLine(), out int value ) )
+            {
+                if ( value < 1 )
+                {
+                    Console.WriteLine( InvalidCountMessage );
+                    continue;
+                }
                 return value;
-            Console.WriteLine( "Invalid input! Please enter a number" );
+            }
+
+            Console.WriteLine( InvalidInputMessage );
         }
     }
 
-    static void Main()
+    private static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
+        Console.InputEncoding = Encoding.UTF8;
 
-        string productName = GetString( "Enter product name: " );
-        int productCount = GetInt( "Enter product count: " );
-        string buyer = GetString( "Enter your name: " );
-        string address = GetString( "Enter delivery address: " );
+        string productName = GetString( "Введите название продукта: " );
+        int productCount = GetInt( "Введите колличество товара: " );
+        string buyer = GetString( "Введите свое имя: " );
+        string address = GetString( "Введите адрес доставки: " );
 
-        Order order = new Order( productName, productCount, buyer, address );
+        Order order = new( productName, productCount, buyer, address );
         order.Confirm();
-        order.PrintSuccess();
+        order.PrintOrderStatus();
+
     }
 
 }
