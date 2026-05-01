@@ -1,44 +1,27 @@
 ﻿namespace OrderManager
 {
-    public class Order
+    public class Order(
+        string product,
+        int count,
+        string buyer,
+        string address )
     {
-        public string Product { get; set; }
-        public string BuyerName { get; set; }
-        public string BuyerAddress { get; set; }
-        public int ProductCount { get; set; }
-        public bool IsConfirmed { get; set; } = false;
+        public string Product { get; private init; } = product;
+        public string BuyerName { get; private init; } = buyer;
+        public string BuyerAddress { get; private init; } = address;
+        public int ProductCount { get; private init; } = count;
+        public bool IsConfirmed { get; private set; }
+
         private const int DeliveryWaitingTime = 3;
 
-        public Order(
-            string product,
-            int count,
-            string buyer,
-            string address )
+        public void SetConfirmation( bool status )
         {
-            Product = product;
-            BuyerName = buyer;
-            BuyerAddress = address;
-            ProductCount = count;
+            IsConfirmed = status;
         }
 
-        public void Confirm()
+        public DateTime GetDeliveryDate()
         {
-            Console.WriteLine( $"Здравствуйте, {BuyerName}, вы заказали {ProductCount} {Product} на адрес {BuyerAddress}, все верно?" );
-            string answer = Console.ReadLine()?.ToLower().Trim() ?? "";
-            IsConfirmed = answer is "да" or "yes" or "y";
-        }
-
-        public void PrintOrderStatus()
-        {
-            if ( !IsConfirmed )
-            {
-                Console.WriteLine( "Заказ не был подтверждён" );
-                return;
-            }
-
-            DateTime deliveryDate = DateTime.Today.AddDays( DeliveryWaitingTime );
-            Console.WriteLine( $"{BuyerName}! Ваш заказ {Product} в количестве {ProductCount} оформлен! " +
-                $"Ожидайте доставку по адресу {BuyerAddress} к {deliveryDate:dd.MM.yyyy}" );
+            return DateTime.Today.AddDays( DeliveryWaitingTime );
         }
     }
 }
