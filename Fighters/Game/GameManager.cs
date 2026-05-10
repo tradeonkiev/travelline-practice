@@ -9,7 +9,7 @@ namespace Fighters.Game
     {
         private const int _roundSafetyCap = 1000;
         private readonly IAttackResolver _attackResolver = attackResolver ?? new RandomAttackResolver();
-        private readonly Random _targetRandom = new();
+        private readonly Random _targetRandom = new Random();
 
         public IFighter Play( List<IFighter> fighters )
         {
