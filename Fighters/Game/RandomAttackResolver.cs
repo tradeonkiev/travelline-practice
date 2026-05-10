@@ -4,7 +4,7 @@ namespace Fighters.Game
 {
     public class RandomAttackResolver : IAttackResolver
     {
-        private readonly Random _random = new();
+        private readonly Random _random = new Random();
         private readonly double _minDamageMultiplier;
         private readonly double _maxDamageMultiplier;
         private readonly double _critChance;
