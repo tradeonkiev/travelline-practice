@@ -7,21 +7,19 @@
         string address )
     {
         public string Product { get; private init; } = product;
+        public int ProductCount { get; private init; } = count;
+
         public string BuyerName { get; private init; } = buyer;
         public string BuyerAddress { get; private init; } = address;
-        public int ProductCount { get; private init; } = count;
+
         public bool IsConfirmed { get; private set; }
-
         private const int DeliveryWaitingTime = 3;
+        public DateTime DeliveryDate { get; } = DateTime.Now.AddDays( DeliveryWaitingTime );
 
-        public void SetConfirmation( bool status )
+        public void SetConfirmation( bool isConfirmed )
         {
-            IsConfirmed = status;
+            IsConfirmed = isConfirmed;
         }
 
-        public DateTime GetDeliveryDate()
-        {
-            return DateTime.Today.AddDays( DeliveryWaitingTime );
-        }
     }
 }

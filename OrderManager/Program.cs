@@ -5,7 +5,8 @@ internal class Program
 {
     private const string InvalidCountMessage = "Число товаров не может быть меньше 1. Повторите попытку ввода";
     private const string InvalidInputMessage = "Неправильный ввод! Введите число";
-    private static readonly HashSet<string> AffirmativeResponses = new HashSet<string> { "yes", "y", "да" };
+
+    private static readonly HashSet<string> AffirmativeResponses = new HashSet<string> { "yes", "y", "да", "da" };
 
     private static string GetString( string prompt )
     {
@@ -28,6 +29,7 @@ internal class Program
 
                 return value;
             }
+
             Console.WriteLine( InvalidInputMessage );
         }
     }
@@ -40,7 +42,7 @@ internal class Program
             return;
         }
 
-        DateTime deliveryDate = order.GetDeliveryDate();
+        DateTime deliveryDate = order.DeliveryDate;
         Console.WriteLine( $"{order.BuyerName}! Ваш заказ {order.Product} в количестве {order.ProductCount} оформлен! " +
             $"Ожидайте доставку по адресу {order.BuyerAddress} к {deliveryDate:dd.MM.yyyy}" );
     }
