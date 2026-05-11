@@ -1,14 +1,19 @@
-﻿enum OptionResult
+﻿internal class Program
 {
-    Success = 0,
-    Error = 1,
-    InvalidInput = 2,
-    InvalidBalance = 3,
-};
+    private const string AllBetCommand = "all";
 
-internal class Program
-{
-    private static decimal balance = 0;
+    private const int MinDiceValue = 1;
+    private const int MaxDiceValue = 21;
+
+    private const int MinWinValue = 18;
+    private const int MaxWinValue = 20;
+
+    private const int WinPercentAddMultiplier = 20;
+    private const int WinModul = 17;
+
+    private static readonly string[] MenuOptions = [ "1. Deposit", "2. Show balance", "3. Play", "4. Quit" ];
+
+    private static decimal balance = 0m;
     private static bool isGameOver = false;
 
     private static void Main( string[] args )
@@ -24,8 +29,8 @@ internal class Program
             string message = result switch
             {
                 OptionResult.Error => "Error Issue",
-                OptionResult.InvalidInput => "Invalid Input",
-                OptionResult.InvalidBalance => "Insufficient $!",
+                OptionResult.InvalidInput => "Invalid input",
+                OptionResult.InvalidBalance => "Insufficient funds on balance",
                 _ => ""
             };
 
@@ -52,11 +57,11 @@ internal class Program
 
     private static OptionResult Play()
     {
-        Console.Write( "Enter your bet (or type \"all\"): " );
+        Console.Write( $"Enter your bet (or type \"{AllBetCommand}\"): " );
         string input = Console.ReadLine()?.Trim().ToLower() ?? "";
         decimal bet;
 
-        if ( input == "all" )
+        if ( input == AllBetCommand )
         {
             bet = balance;
         }
@@ -71,19 +76,20 @@ internal class Program
         }
 
         balance -= bet;
-        int seed = Random.Shared.Next( 1, 21 );
+        int seed = Random.Shared.Next( MinDiceValue, MaxDiceValue );
         Console.WriteLine( $"Rolled: {seed}" );
 
-        if ( seed >= 18 && seed <= 20 )
+        if ( seed >= MinWinValue && seed <= MaxWinValue )
         {
             decimal payout = CalculateWinAmount( bet, seed );
             balance += bet + payout;
-            Console.Write( $"You won +{payout}. " );
+            Console.Write( $"You won +{payout}. Try again" );
         }
         else
         {
-            Console.Write( $"You lost -{bet}. " );
+            Console.Write( $"You lost -{bet}. Try again" );
         }
+
         Console.WriteLine( $"Your balance: {balance}" );
 
         return OptionResult.Success;
@@ -91,8 +97,7 @@ internal class Program
 
     private static decimal CalculateWinAmount( decimal value, int seed )
     {
-        int multiplicator = 20;
-        decimal winPercent = multiplicator * ( seed % 17 );
+        decimal winPercent = WinPercentAddMultiplier * ( seed % WinModul );
 
         if ( winPercent < 0 )
             return 0;
@@ -102,21 +107,18 @@ internal class Program
 
     private static OptionResult MakeDeposit()
     {
-        Console.WriteLine( "Deposite Money: " );
-        string depositeStr = Console.ReadLine() ?? "";
+        Console.Write( "Deposit money: " );
+        string depositStr = Console.ReadLine() ?? "";
 
-        if ( !int.TryParse( depositeStr, out int deposit ) || deposit <= 0 )
+        bool isValid = int.TryParse( depositStr, out int deposit ) && deposit > 0 && int.MaxValue - deposit > balance;
+
+        if ( !isValid )
         {
             return OptionResult.Error;
         }
 
-        if ( int.MaxValue - deposit > balance )
-        {
-            balance += deposit;
-            return OptionResult.Success;
-        }
-
-        return OptionResult.Error;
+        balance += deposit;
+        return OptionResult.Success;
     }
 
     private static OptionResult ShowBalance()
@@ -137,10 +139,10 @@ internal class Program
     {
         Console.WriteLine( "Casino" );
     }
+
     private static void PrintMenu()
     {
-        List<string> menuOpts = [ "1. DEPOSIT", "2. Show balance", "3. Play", "4. Quit" ];
-        foreach ( var item in menuOpts )
+        foreach ( string item in MenuOptions )
         {
             Console.WriteLine( item );
         }
