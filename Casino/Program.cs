@@ -1,5 +1,9 @@
-﻿internal class Program
+﻿using Casino;
+
+internal class Program
 {
+    private const decimal MaxBalanceValue = 1_000_000_000m;
+
     private const string AllBetCommand = "all";
 
     private const int MinDiceValue = 1;
@@ -8,7 +12,7 @@
     private const int MinWinValue = 18;
     private const int MaxWinValue = 20;
 
-    private const int WinPercentAddMultiplier = 20;
+    private const int WinPercentMultiplier = 20;
     private const int WinModul = 17;
 
     private static readonly string[] MenuOptions = [ "1. Deposit", "2. Show balance", "3. Play", "4. Quit" ];
@@ -31,6 +35,7 @@
                 OptionResult.Error => "Error Issue",
                 OptionResult.InvalidInput => "Invalid input",
                 OptionResult.InvalidBalance => "Insufficient funds on balance",
+                OptionResult.BalanceLimit => "The maximum balance limit has been exceeded",
                 _ => ""
             };
 
@@ -70,24 +75,29 @@
             return OptionResult.InvalidInput;
         }
 
-        if ( balance - bet < 0 || bet <= 0 )
+        if ( balance - bet < 0 )
         {
-            return ( balance - bet < 0 ) ? OptionResult.InvalidBalance : OptionResult.InvalidInput;
+            return OptionResult.InvalidBalance;
+        }
+        else if ( bet <= 0 )
+        {
+            return OptionResult.InvalidInput;
         }
 
         balance -= bet;
-        int seed = Random.Shared.Next( MinDiceValue, MaxDiceValue );
-        Console.WriteLine( $"Rolled: {seed}" );
 
-        if ( seed >= MinWinValue && seed <= MaxWinValue )
+        BetResult result = DetermineBetOutcome( bet );
+
+        Console.WriteLine( $"Rolled: {result.RolledValue}" );
+
+        if ( result.IsWin )
         {
-            decimal payout = CalculateWinAmount( bet, seed );
-            balance += bet + payout;
-            Console.Write( $"You won +{payout}. Try again" );
+            balance += bet + result.Payout;
+            Console.Write( $"You won +{result.Payout}. " );
         }
         else
         {
-            Console.Write( $"You lost -{bet}. Try again" );
+            Console.Write( $"You lost -{bet}. " );
         }
 
         Console.WriteLine( $"Your balance: {balance}" );
@@ -95,12 +105,29 @@
         return OptionResult.Success;
     }
 
+    private static BetResult DetermineBetOutcome( decimal bet )
+    {
+        int rolledValue = Random.Shared.Next( MinDiceValue, MaxDiceValue );
+
+        if ( rolledValue >= MinWinValue && rolledValue <= MaxWinValue )
+        {
+            decimal payout = CalculateWinAmount( bet, rolledValue );
+
+            return new BetResult( IsWin: true, RolledValue: rolledValue, Payout: payout );
+        }
+
+        return new BetResult( IsWin: false, RolledValue: rolledValue, Payout: 0 );
+    }
+
+
     private static decimal CalculateWinAmount( decimal value, int seed )
     {
-        decimal winPercent = WinPercentAddMultiplier * ( seed % WinModul );
+        decimal winPercent = WinPercentMultiplier * ( seed % WinModul );
 
         if ( winPercent < 0 )
+        {
             return 0;
+        }
 
         return value * winPercent / 100;
     }
@@ -110,14 +137,18 @@
         Console.Write( "Deposit money: " );
         string depositStr = Console.ReadLine() ?? "";
 
-        bool isValid = int.TryParse( depositStr, out int deposit ) && deposit > 0 && int.MaxValue - deposit > balance;
-
-        if ( !isValid )
+        if ( !decimal.TryParse( depositStr, out decimal deposit ) || deposit <= 0 )
         {
-            return OptionResult.Error;
+            return OptionResult.InvalidInput;
+        }
+
+        if ( balance + deposit > MaxBalanceValue )
+        {
+            return OptionResult.BalanceLimit;
         }
 
         balance += deposit;
+
         return OptionResult.Success;
     }
 
