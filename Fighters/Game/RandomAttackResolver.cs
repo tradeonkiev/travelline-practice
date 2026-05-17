@@ -27,7 +27,7 @@ namespace Fighters.Game
             }
             if ( critChance < 0 || critChance > 1 )
             {
-                throw new ArgumentOutOfRangeException( "Crit chance must be in range(0, 1)" );
+                throw new ArgumentOutOfRangeException( nameof( critChance ) );
             }
 
             _minDamageMultiplier = minDamageMultiplier;

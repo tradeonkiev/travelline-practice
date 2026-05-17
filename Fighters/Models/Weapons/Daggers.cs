@@ -2,7 +2,7 @@
 {
     public class Daggers : IWeapon
     {
-        public string Name => "Dagger";
+        public string Name => "Daggers";
         public int Damage => 2;
     }
 }

@@ -26,7 +26,7 @@ namespace Fighters.Models.Fighters
         {
             if ( string.IsNullOrWhiteSpace( name ) )
             {
-                throw new ArgumentException( nameof( name ), "Name cant be empty" );
+                throw new ArgumentException( "Name cant be empty", nameof( name ) );
             }
 
             Name = name;
@@ -63,25 +63,15 @@ namespace Fighters.Models.Fighters
             return Race.Initiative + Class.Initiative;
         }
 
-        public void SetWeapon( IWeapon weapon )
-        {
-            Weapon = weapon;
-        }
-
-        public void SetArmor( IArmor armor )
-        {
-            Armor = armor;
-        }
-
         public void TakeDamage( int damage )
         {
             if ( damage < 0 )
             {
-                throw new ArgumentOutOfRangeException( nameof( damage ), "Damage cant be neagtive value" );
+                throw new ArgumentOutOfRangeException( nameof( damage ), "Damage cannot be negative" );
             }
 
             int newHealth = _currentHealth - damage;
-            _currentHealth = newHealth < 0 ? 0 : newHealth;
+            _currentHealth = Math.Max( 0, newHealth );
         }
 
 
@@ -91,17 +81,17 @@ namespace Fighters.Models.Fighters
             int heal = Race.Regeneration + Class.Regeneration;
 
             int newHealth = _currentHealth + heal;
-            _currentHealth = newHealth < GetMaxHealth() ? newHealth : GetMaxHealth();
+            _currentHealth = Math.Min( newHealth, GetMaxHealth() );
         }
 
         public void Regenerate( int heal )
         {
             if ( heal < 0 )
             {
-                throw new ArgumentOutOfRangeException( nameof( heal ), "Heal cant be neagtive value" );
+                throw new ArgumentOutOfRangeException( nameof( heal ), "The value of Heal cannot be negative" );
             }
             int newHealth = _currentHealth + heal;
-            _currentHealth = newHealth < GetMaxHealth() ? newHealth : GetMaxHealth();
+            _currentHealth = Math.Min( newHealth, GetMaxHealth() );
         }
 
         public bool TryDodge()
@@ -113,6 +103,14 @@ namespace Fighters.Models.Fighters
         public bool IsAlive()
         {
             return _currentHealth > 0;
+        }
+
+        public override string ToString()
+        {
+            return $"{Name}\t[{Race.Name}\t- {Class.Name}],\t" +
+                $"weapon: {Weapon.Name},\tarmor name: {Armor.Name},\t" +
+                $"hp {GetMaxHealth()},\tstrength {CalculateDamage()},\t" +
+                $"armor {CalculateArmor()},\tinit. {CalculateInitiative()}";
         }
     }
 }

@@ -1,13 +1,11 @@
 using Fighters.Models.Fighters;
-using System.Data;
 
 namespace Fighters.Game
 {
     public class GameManager(
-        IAttackResolver? attackResolver = null
-            )
+        IAttackResolver? attackResolver = null )
     {
-        private const int _roundSafetyCap = 1000;
+        private const int RoundSafetyCap = 1000;
         private readonly IAttackResolver _attackResolver = attackResolver ?? new RandomAttackResolver();
         private readonly Random _targetRandom = new Random();
 
@@ -24,11 +22,11 @@ namespace Fighters.Game
             Console.WriteLine( $"Fight was startes! Players: {fighters.Count}" );
             foreach ( IFighter f in fighters )
             {
-                Console.WriteLine( $" + {Describe( f )}" );
+                Console.WriteLine( $" + {f}" );
             }
 
             int round = 0;
-            while ( CountAlive( indexedFighters ) > 1 && round < _roundSafetyCap )
+            while ( CountAlive( indexedFighters ) > 1 && round < RoundSafetyCap )
             {
                 round++;
                 Console.WriteLine( $"* Round {round,3} " );
@@ -89,7 +87,7 @@ namespace Fighters.Game
                     continue;
                 }
 
-                List<IFighter>? aliveOpponents = [ .. indexedFighters.Where( x => !( x.Fighter == attacker ) && x.Fighter.IsAlive() ).Select( x => x.Fighter ) ];
+                List<IFighter>? aliveOpponents = [ .. indexedFighters.Where( x => x.Fighter != attacker && x.Fighter.IsAlive() ).Select( x => x.Fighter ) ];
 
                 if ( aliveOpponents.Count == 0 )
                 {
@@ -122,15 +120,5 @@ namespace Fighters.Game
                 $"(hit {result.ModifiedDamage},\tarmor {result.Defender.CalculateArmor()};\t" +
                 $"hp {result.Defender.GetCurrentHealth()}/{result.Defender.GetMaxHealth()})";
         }
-
-        private static string Describe( IFighter fighter )
-        {
-            return $"{fighter.Name}\t[{fighter.Race.Name}\t- {fighter.Class.Name}],\t" +
-                $"weapon: {fighter.Weapon.Name},\tarmor name: {fighter.Armor.Name},\t" +
-                $"hp {fighter.GetMaxHealth()},\tstreanght {fighter.CalculateDamage()},\t" +
-                $"armor {fighter.CalculateArmor()},\tinit. {fighter.CalculateInitiative()}";
-        }
-
-        private record IndexedFighter( IFighter Fighter, int OriginalIndex );
     }
 }

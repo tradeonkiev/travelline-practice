@@ -68,7 +68,7 @@ namespace Fighters.UI
             Console.WriteLine( "  play          — start fight (need 2 warriors to start)" );
             Console.WriteLine( "  refill        — heal warrior" );
             Console.WriteLine( "  help          - show all commands" );
-            Console.WriteLine( "  exit          — you are stupid?" );
+            Console.WriteLine( "  exit          — are you kidding?" );
         }
 
         private void AddFighter()
@@ -81,7 +81,7 @@ namespace Fighters.UI
             }
             catch ( Exception ex )
             {
-                Console.WriteLine( $"Cant create warrior: {ex.Message}" );
+                Console.WriteLine( $"Unable to create a warrior: {ex.Message}" );
             }
         }
 
@@ -99,7 +99,7 @@ namespace Fighters.UI
                 IFighter f = _fighters[ i ];
                 Console.WriteLine( $"  {i}: {f.Name} [{f.Race.Name} - {f.Class.Name}] " +
                            $"hp {f.GetMaxHealth()}, current hp {f.GetCurrentHealth()} " +
-                           $"strangth {f.CalculateDamage()}, armor {f.CalculateArmor()}, " +
+                           $"strength {f.CalculateDamage()}, armor {f.CalculateArmor()}, " +
                            $"aggression {f.CalculateInitiative()}" );
             }
         }
@@ -113,7 +113,7 @@ namespace Fighters.UI
             }
 
             ListFighters();
-            Console.WriteLine( "Input the fighter number to remove:" );
+            Console.WriteLine( "Enter the ID of the fighter you want to delete:" );
             string? input = Console.ReadLine();
             if ( int.TryParse( input?.Trim(), out int idx ) && idx >= 0 && idx < _fighters.Count )
             {
@@ -138,7 +138,7 @@ namespace Fighters.UI
             List<IFighter> notFresh = [ .. _fighters.Where( f => f.GetCurrentHealth() != f.GetMaxHealth() ) ];
             if ( notFresh.Count > 0 )
             {
-                Console.WriteLine( "Warning: Some fighters have low HP after the last battle. Heal them with a \"refill\" if you want a fresh start" );
+                Console.WriteLine( "Note: Some fighters have low health after the last battle. If you want to start over, restore their health using the \"refill\" command." );
                 Console.Write( "Continue? " );
                 string answer = Console.ReadLine()?.Trim().ToLower() ?? "";
                 Console.WriteLine();
@@ -155,7 +155,7 @@ namespace Fighters.UI
             List<IFighter> alive = [ .. _fighters.Where( f => f.IsAlive() ) ];
             if ( alive.Count < 2 )
             {
-                Console.WriteLine( "There are less than two living fighters - no one to fight" );
+                Console.WriteLine( "There are fewer than two fighters left — there's no one to fight" );
                 return;
             }
 

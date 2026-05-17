@@ -55,13 +55,13 @@ namespace Fighters.UI
         {
             while ( true )
             {
-                Console.WriteLine( "Inpur wariors name:" );
+                Console.WriteLine( "Enter the warrior's name:" );
                 string? name = Console.ReadLine();
                 if ( !string.IsNullOrWhiteSpace( name ) )
                 {
                     return name.Trim();
                 }
-                Console.WriteLine( "Name cant be empty, try again" );
+                Console.WriteLine( "The “Name” field cannot be left blank. Please try again." );
             }
         }
 

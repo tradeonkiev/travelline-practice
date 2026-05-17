@@ -20,9 +20,6 @@ namespace Fighters.Models.Fighters
         int CalculateArmor();
         int CalculateInitiative();
 
-        void SetWeapon( IWeapon weapon );
-        void SetArmor( IArmor armor );
-
         bool TryDodge();
         void Regenerate();
         void Regenerate( int heal );
