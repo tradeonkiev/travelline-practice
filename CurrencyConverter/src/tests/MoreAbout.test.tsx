@@ -10,10 +10,6 @@ const pln = currencies.find((currency) => currency.code === "PLN") as Currency;
 const jpy = currencies.find((currency) => currency.code === "JPY") as Currency;
 
 
-afterEach(() => {
-  cleanup();
-});
-
 describe("MoreAbout", () => {
   it("RenderSelectedCurrencyBlock", () => {
     render(<MoreAbout from={cad} to={pln} />);
