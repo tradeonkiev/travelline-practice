@@ -1,8 +1,8 @@
 import { fireEvent, render } from "@testing-library/react";
 import { expect, test } from "vitest";
-import App from "./App";
+import App from "../App";
 
-test("recalculates result when amount changes", () => {
+test("RecalculateResultWhenAmountChanges", () => {
   render(<App />);
 
   const amountInput = document.getElementById(
