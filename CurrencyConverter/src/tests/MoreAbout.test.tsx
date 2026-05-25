@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { MoreAbout } from "../components/MoreAbout/MoreAbout";
 import currenciesJson from "../data/2_hw_mock_currencies.json";
 import type { Currency } from "../models/currency";
