@@ -1,12 +1,10 @@
 import { Triangle } from "lucide-react";
-import type { Currency } from "../../models/currency";
 import styles from "./CurrencyInput.module.scss";
+import { useContext } from "react";
+import { CurrencyConverterContext } from "../../context/CurrencyConverterContext";
 
 type CurrencyInputProps = {
   id: string;
-  value: string;
-  currencyCode: string;
-  currencies: Currency[];
   onChangeValue: (value: string) => void;
   onCurrencyChange: (currencyCode: string) => void;
   readOnly?: boolean;
@@ -14,13 +12,20 @@ type CurrencyInputProps = {
 
 export const CurrencyInput = ({
   id,
-  value,
-  currencyCode,
-  currencies,
   onChangeValue,
   onCurrencyChange,
   readOnly = false,
 }: CurrencyInputProps) => {
+  const converter = useContext(CurrencyConverterContext);
+
+  if (!converter) {
+    throw new Error("CurrencyInput must be used within CurrencyConverterProvider");
+  }
+
+  const { currencies } = converter;
+  const value = readOnly ? converter.result : converter.amount;
+  const currencyCode = readOnly ? converter.to : converter.from;
+  
   return (
     <div className={styles.field}>
       <input

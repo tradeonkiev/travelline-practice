@@ -1,13 +1,7 @@
-import type { Currency } from "../../models/currency";
 import styles from "./ConverterHeader.module.scss";
+import { useContext } from "react";
+import { CurrencyConverterContext } from "../../context/CurrencyConverterContext";
 
-type ConverterHeaderProps = {
-  amount: string;
-  fromCurrency: Currency;
-  result: string;
-  toCurrency: Currency;
-  updatedAt: string;
-};
 
 const formatDate = (value: string) => {
   if (!value) {
@@ -21,13 +15,15 @@ const formatDate = (value: string) => {
   }).format(new Date(value));
 }
 
-export const ConverterHeader = ({
-  amount,
-  fromCurrency,
-  result,
-  toCurrency,
-  updatedAt,
-}: ConverterHeaderProps) => {
+export const ConverterHeader = () => {
+  const converter = useContext(CurrencyConverterContext);
+
+  if (!converter) {
+    throw new Error("ConverterHeader must be used within CurrencyConverterProvider");
+  }
+
+  const { amount, fromCurrency, result, toCurrency } = converter;
+  const updatedAt = converter.rate.dateTime;
   return (
     <div className={styles.header}>
       <div className={styles.label}>

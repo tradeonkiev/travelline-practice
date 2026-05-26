@@ -1,9 +1,10 @@
 import { CurrencyCard } from "../components/CurrencyCard/CurrencyCard";
-import { useCurrencyConverter } from "../hooks/useCurrencyConverter";
-import { currencies, priceChanges } from "../mocks/currencyMocks";
+import { CurrencyConverterProvider } from "../context/CurrencyConverterProvider";
 
 export function Main() {
-  const converter = useCurrencyConverter({ currencies, priceChanges });
-
-  return <CurrencyCard converter={converter} />;
+  return (
+    <CurrencyConverterProvider>
+      <CurrencyCard />
+    </CurrencyConverterProvider>
+  );
 }
