@@ -14,13 +14,11 @@ export const CurrencyCard = () => {
 
   const {
     from,
-    fromCurrency,
     setAmount,
     setFrom,
     setTo,
     swapCurrencies,
     to,
-    toCurrency,
   } = converter;
 
   return (
@@ -51,7 +49,7 @@ export const CurrencyCard = () => {
           </button>
         </div>
 
-        <MoreAbout key={`${from}-${to}`} from={fromCurrency} to={toCurrency} />
+        <MoreAbout key={`${from}-${to}`} />
       </div>
     </div>
   );

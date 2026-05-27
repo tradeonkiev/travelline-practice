@@ -25,7 +25,7 @@ export const CurrencyInput = ({
   const { currencies } = converter;
   const value = readOnly ? converter.result : converter.amount;
   const currencyCode = readOnly ? converter.to : converter.from;
-  
+
   return (
     <div className={styles.field}>
       <input
