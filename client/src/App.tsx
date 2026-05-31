@@ -47,7 +47,7 @@ export const App = () => {
             value={result}
             currencyCode={to}
             currencies={currencies}
-            onChangeValue={() => { }}
+            onChangeValue={() => {}}
             onCurrencyChange={setTo}
             readOnly={true}
           />
