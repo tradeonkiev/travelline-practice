@@ -1,0 +1,53 @@
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-block-size: 100vh;
+  padding: 30px;
+
+  background: #edf4fa;
+}
+
+.card {
+  inline-size: 1257px;
+  padding: 29px 28px 53px;
+  background: #fff;
+  border-radius: 20px;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+
+  max-inline-size: 601px;
+  margin: 18px auto 30px;
+}
+
+.swap-button {
+  inline-size: 88px;
+  block-size: 34px;
+
+  background: #101826;
+  border: 0;
+  border-radius: 999px;
+
+  color: #fff;
+  font-size: 14px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  cursor: pointer;
+
+  &:hover {
+    background: #2d6e41;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
