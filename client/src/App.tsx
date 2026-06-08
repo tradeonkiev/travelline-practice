@@ -23,7 +23,7 @@ export const App = () => {
 
   return (
     <div className={styles.page}>
-      <div className={styles.card} aria-label="Currency converter">
+      <div className={styles.card}>
         <ConverterHeader
           amount={amount}
           fromCurrency={fromCurrency}
@@ -47,7 +47,7 @@ export const App = () => {
             value={result}
             currencyCode={to}
             currencies={currencies}
-            onChangeValue={() => {}}
+            onChangeValue={() => { }}
             onCurrencyChange={setTo}
             readOnly={true}
           />
