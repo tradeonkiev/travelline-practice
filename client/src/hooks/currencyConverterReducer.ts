@@ -44,9 +44,9 @@ export const initialCurrencyConverterState: CurrencyConverterState = {
 const formatResult = (value: number) => {
   return Number.isFinite(value)
     ? value.toLocaleString('en-US', {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 0
-      })
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 0
+    })
     : '0';
 };
 
@@ -139,14 +139,14 @@ export const currencyConverterReducer = (
         ...state,
         priceChanges: priceChange
           ? {
-              ...state.priceChanges,
-              [from]: {
-                ...state.priceChanges[from],
-                [to]: priceChange
-              }
+            ...state.priceChanges,
+            [from]: {
+              ...state.priceChanges[from],
+              [to]: priceChange
             }
+          }
           : state.priceChanges,
-        rateError: priceChange ? null : 'Сервер не вернул курс для выбранной пары валют'
+        rateError: priceChange ? null : 'No price data available for the selected currency pair.'
       };
     }
 

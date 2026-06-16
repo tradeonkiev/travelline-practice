@@ -56,12 +56,12 @@ describe('currencyConverterReducer', () => {
 
   it('writes request error', () => {
     const state = currencyConverterReducer(initialCurrencyConverterState, {
-      payload: 'Проблема на стороне сервера',
+      payload: 'Server responded with an error. Please try again later.',
       type: 'SET_ERROR'
     });
 
     expect(state.isLoading).toBe(false);
-    expect(state.error).toBe('Проблема на стороне сервера');
+    expect(state.error).toBe('Server responded with an error. Please try again later.');
   });
 
   it('writes price data and converts amount', () => {
@@ -84,5 +84,24 @@ describe('currencyConverterReducer', () => {
 
     expect(state.priceChanges.CAD.PLN).toEqual(priceChange);
     expect(getConvertedAmount(state)).toBe('5.9');
+  });
+
+  it('writes rate error when price data is not available', () => {
+    const loadedState = currencyConverterReducer(initialCurrencyConverterState, {
+      payload: currencies,
+      type: 'SET_CURRENCIES'
+    });
+
+    const state = currencyConverterReducer(loadedState, {
+      payload: {
+        from: 'CAD',
+        priceChange: null,
+        to: 'PLN'
+      },
+      type: 'SET_PRICE_CHANGE'
+    });
+
+    expect(state.priceChanges).toEqual({});
+    expect(state.rateError).toBe('No price data available for the selected currency pair.');
   });
 });
