@@ -1,4 +1,6 @@
 .page {
+  position: relative;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,6 +16,26 @@
   padding: 29px 28px 53px;
   background: #fff;
   border-radius: 20px;
+}
+
+.toast {
+  position: fixed;
+  inset-block-start: 24px;
+  inset-inline: 50% auto;
+  z-index: 999;
+
+  max-inline-size: 500px;
+  padding: 14px 18px;
+
+  background: #c10e05;
+  border-radius: 8px;
+  box-shadow: 0 14px 40px rgb(238 0 20 / 20%);
+
+  color: #fff;
+  font-size: 15px;
+  font-weight: bold;
+
+  transform: translateX(-50%);
 }
 
 .fields {

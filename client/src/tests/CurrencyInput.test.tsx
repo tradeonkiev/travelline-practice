@@ -1,13 +1,19 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../App';
 import currenciesJson from '../data/2_hw_mock_currencies.json';
 import type { Currency } from '../models/currency';
+import { mockSuccessfulCurrencyApi } from './testCurrencyApiMock';
 
 const currencies = currenciesJson as Currency[];
 
-function renderApp() {
+async function renderApp() {
+  mockSuccessfulCurrencyApi();
   render(<App />);
+
+  await waitFor(() => {
+    expect((document.getElementById('to-input-amount') as HTMLInputElement).value).toBe('2.95');
+  });
 
   return {
     fromAmountInput: document.getElementById('from-input-amount') as HTMLInputElement,
@@ -22,13 +28,17 @@ let toAmountInput: HTMLInputElement;
 let fromCurrencySelect: HTMLSelectElement;
 let toCurrencySelect: HTMLSelectElement;
 
-beforeEach(() => {
-  const rendered = renderApp();
+beforeEach(async () => {
+  const rendered = await renderApp();
 
   fromAmountInput = rendered.fromAmountInput;
   toAmountInput = rendered.toAmountInput;
   fromCurrencySelect = rendered.fromCurrencySelect;
   toCurrencySelect = rendered.toCurrencySelect;
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('Currency converter', () => {
@@ -49,7 +59,7 @@ describe('Currency converter', () => {
     expect(toAmountInput.value).toBe('5.9');
   });
 
-  it('RecalculateConversionWhenPairChanges', () => {
+  it('RecalculateConversionWhenPairChanges', async () => {
     fireEvent.change(fromAmountInput, {
       target: { value: '2' }
     });
@@ -58,7 +68,10 @@ describe('Currency converter', () => {
     });
 
     expect(toCurrencySelect.value).toBe('JPY');
-    expect(toAmountInput.value).toBe('212.8');
+
+    await waitFor(() => {
+      expect(toAmountInput.value).toBe('212.8');
+    });
   });
 
   it('DoesNotAllowEqualCurrenciesInPair', () => {
@@ -71,7 +84,7 @@ describe('Currency converter', () => {
     expect(toCurrencySelect.value).toBe('CAD');
   });
 
-  it('ResetMoreAboutChildStateByKeyWhenPairChanges', () => {
+  it('ResetMoreAboutChildStateByKeyWhenPairChanges', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'CAD/PLN: about' }));
     expect(screen.queryByText('Canadian dollar - CAD - $')).toBeNull();
 
@@ -79,7 +92,7 @@ describe('Currency converter', () => {
       target: { value: 'JPY' }
     });
 
-    expect(screen.getByRole('button', { name: 'CAD/JPY: about' })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: 'CAD/JPY: about' })).toBeTruthy();
     expect(screen.getByText('Canadian dollar - CAD - $')).toBeTruthy();
     expect(screen.getByText('Japanese yen - JPY - ¥')).toBeTruthy();
   });

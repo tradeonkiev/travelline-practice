@@ -1,72 +1,96 @@
-import { useState } from 'react';
-import type { Currency, PriceChanges } from '../models/currency';
+import { useEffect, useReducer } from 'react';
+import { getCurrencies, getLatestPriceChange } from '../api/currencyApi';
+import {
+  currencyConverterReducer,
+  getConvertedAmount,
+  getSelectedPriceChange,
+  initialCurrencyConverterState
+} from './currencyConverterReducer';
 
-const DEFAULT_AMOUNT = '1';
+const SERVER_ERROR_MESSAGE = 'Server responded with an error. Please try again later.';
 
-type UseCurrencyConverterParams = {
-  currencies: Currency[];
-  priceChanges: PriceChanges;
+const isAbortError = (error: unknown) => {
+  return typeof error === 'object' && error !== null && 'name' in error && error.name === 'AbortError';
 };
 
-function formatResult(value: number) {
-  return Number.isFinite(value)
-    ? value.toLocaleString('en-US', {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 0
-      })
-    : '0';
-}
+export const useCurrencyConverter = () => {
+  const [state, dispatch] = useReducer(currencyConverterReducer, initialCurrencyConverterState);
 
-export function useCurrencyConverter({ currencies, priceChanges }: UseCurrencyConverterParams) {
-  const firstCurrency = currencies[0].code;
-  const secondCurrency = currencies[1].code;
-
-  const [from, setFromState] = useState(firstCurrency);
-  const [to, setToState] = useState(secondCurrency);
-  const [amount, setAmount] = useState(DEFAULT_AMOUNT);
-
-  const rate = priceChanges[from]?.[to];
-
-  const numericAmount = Number(amount.replace(',', '.'));
-  const result = rate ? formatResult(numericAmount * rate.price) : '0';
-
+  const { amount, currencies, error, from, isLoading, rateError, to } = state;
+  const rate = getSelectedPriceChange(state);
+  const result = getConvertedAmount(state);
   const fromCurrency = currencies.find((currency) => currency.code === from) ?? currencies[0];
   const toCurrency = currencies.find((currency) => currency.code === to) ?? currencies[1];
 
-  function setFrom(nextFrom: string) {
-    setFromState(nextFrom);
+  useEffect(() => {
+    const abortController = new AbortController();
 
-    if (nextFrom === to) {
-      swapCurrencies();
+    dispatch({ payload: true, type: 'SET_IS_LOADING' });
+    dispatch({ payload: null, type: 'SET_ERROR' });
+
+    getCurrencies(abortController.signal)
+      .then((loadedCurrencies) => {
+        dispatch({ payload: loadedCurrencies, type: 'SET_CURRENCIES' });
+      })
+      .catch((apiError: unknown) => {
+        if (isAbortError(apiError)) {
+          console.error(apiError);
+          return;
+        }
+
+        dispatch({ payload: SERVER_ERROR_MESSAGE, type: 'SET_ERROR' });
+      });
+
+    return () => abortController.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!from || !to || from === to) {
+      return;
     }
-  }
 
-  function setTo(nextTo: string) {
-    setToState(nextTo);
+    const abortController = new AbortController();
 
-    if (nextTo === from) {
-      swapCurrencies();
-    }
-  }
+    dispatch({ payload: null, type: 'SET_RATE_ERROR' });
 
-  function swapCurrencies() {
-    setFromState(to);
-    setToState(from);
-    setAmount(result);
-  }
+    getLatestPriceChange(from, to, abortController.signal)
+      .then((priceChange) => {
+        dispatch({
+          payload: {
+            from,
+            priceChange,
+            to
+          },
+          type: 'SET_PRICE_CHANGE'
+        });
+      })
+      .catch((apiError: unknown) => {
+        if (isAbortError(apiError)) {
+          console.error(apiError);
+          return;
+        }
+
+        dispatch({ payload: SERVER_ERROR_MESSAGE, type: 'SET_RATE_ERROR' });
+      });
+
+    return () => abortController.abort();
+  }, [from, to]);
 
   return {
     amount,
     currencies,
+    error,
     from,
     fromCurrency,
+    isLoading,
     rate,
+    rateError,
     result,
-    setAmount,
-    setFrom,
-    setTo,
-    swapCurrencies,
+    setAmount: (value: string) => dispatch({ payload: value, type: 'SET_AMOUNT' }),
+    setFrom: (currencyCode: string) => dispatch({ payload: currencyCode, type: 'SET_FROM' }),
+    setTo: (currencyCode: string) => dispatch({ payload: currencyCode, type: 'SET_TO' }),
+    swapCurrencies: () => dispatch({ type: 'SWAP_CURRENCIES' }),
     to,
     toCurrency
   };
-}
+};

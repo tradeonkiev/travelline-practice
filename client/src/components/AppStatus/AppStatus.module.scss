@@ -1,0 +1,29 @@
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-block-size: 100vh;
+  padding: 30px;
+
+  background: #edf4fa;
+}
+
+.status,
+.error {
+  inline-size: 500px;
+  padding: 48px 24px;
+
+  background: #fff;
+  border-radius: 20px;
+
+  color: #101826;
+  font-size: 50px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.error {
+  background-color: #c10e05;
+  color: #fff;
+}
